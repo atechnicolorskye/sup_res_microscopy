@@ -1,0 +1,241 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Ce gabarit peu servir autant les philosophes que les scientifiques ; 
+% et même d'autres genres, vous en faites ce que vous voulez.
+% J'ai modifié et partagé ce gabarit afin d'épargner � d'autres 
+% d'interminables heures � modifier des gabarits d'articles anglais. 
+% 
+% L'ajout d'une table des matières et une bibliographie a été ajoutée,
+% rendant le gabarit plus ajusté aux besoins de plusieurs.
+%
+% Pour retrouvé le gabarit original, veuillez télécharger les
+% documents suivants: llncs2e.zip (.cls et autres) et 
+% typeinst.zip (.tex). Les documents ci-haut mentionnés ne sont pas 
+% disponibles au même endroit, alors je vous invite � fouiller le web. 
+%
+% Pour l'instant (02-2016) ils sont disponibles tous deux ici :
+%
+% http://kawahara.ca/springer-lncs-latex-template/
+%
+% Netkompt
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%% file typeinst.tex %%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% This is the LaTeX source for the instructions to authors using
+% the LaTeX document class 'llncs.cls' for contributions to
+% the Lecture Notes in Computer Sciences series.
+% http://www.springer.com/lncs       Springer Heidelberg 2006/05/04
+%
+% It may be used as a template for your own input - copy it
+% to a new file with a new name and use it as the basis
+% for your article.
+%
+% NB: the document class 'llncs' has its own and detailed documentation, see
+% ftp://ftp.springer.de/data/pubftp/pub/tex/latex/llncs/latex2e/llncsdoc.pdf
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[runningheads,a4paper]{llncs}
+
+\usepackage[utf8]{inputenc}
+
+\usepackage[
+backend=biber,
+style=alphabetic,
+sorting=ynt
+]{biblatex}
+\addbibresource{references.bib}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\setcounter{tocdepth}{3}
+\usepackage{graphicx}
+
+\usepackage{url}
+\newcommand{\keywords}[1]{\par\addvspace\baselineskip
+\noindent\keywordname\enspace\ignorespaces#1}
+
+\begin{document}
+
+\mainmatter 
+
+\title{Notes for Super Resolution Microscopy}
+
+\author{Sky}
+
+\institute{Columbia University}
+
+\maketitle
+
+\medskip
+
+\section{Single Particle CVI}
+\subsection{Simplified Problem Setup}\label{prob_setup}
+We define our state-space model by the following distributions:
+\begin{align}
+&s_{1, 1} \sim \mathcal{N}(\mu_1, C) \\
+&s_{1, t} | s_{1, t-1} \sim \mathcal{N} (As_{1, t-1}, Q)\ \forall\ t \geq 1\\
+&y_{1, t} \sim \textrm{Poisson}(s_{1, t}) 
+\end{align}
+with means and variances of dimension $\mathbb{R}^{2 \times 1}$ and $\mathbb{R}^{2 \times 2}$ respectively. We also have $\bm{S} = \bm{s}_{1:}$ and $\bm{Y} = \bm{y}_{1:}$.\\
+\noindent
+Using the above definitions, the joint likelihood is:
+\begin{align}
+p(\bm{S}, \bm{Y}) = p(s_{1, 1}) \prod_{t=2}^T p(s_{1, t}|s_{1, t-1}) \prod_{t=1}^T p(y_{1, t}|s_{1, t}) 
+\end{align}
+
+\subsection{CVI for Simplified Problem}
+In this subsection, we demonstrate how to find the closest approximation with CVI. A possible approximation of posterior distribution $q(\bm{S})$ in state-space models is using a multivariate Gaussian distribution. Let us begin by breaking down the joint likelihood into conjugate and non-conjugate parts:
+\begin{align}
+p(\bm{S}, \bm{Y}) \propto \underbrace{p(s_{1, 1}) \prod_{t=2}^T p(s_{1, t}|s_{1, t-1})}_{\text{conjugate}} \underbrace{\prod_{t=1}^T p(y_{1, t}|s_{1, t})}_{\text{non-conjugate}}
+\end{align}
+\noindent
+We note that the first two components are Gaussian and the last is Poisson. In practice, the last term which we denote as the observation term, is approximated with a Gaussian to enable us to take advantage of its properties.
+\begin{align}
+P(y_{1, t}|s_{1,t}) & \approx \mathcal{N}(y_{1, t}|\tilde{y}_{1, t}, \tilde{\sigma}_{1, t}^2) \label{approx}
+\end{align} 
+and its exponential form is $h(z)\exp\{\langle \bm{\lambda}, \bm{\phi(z}) \rangle - A(\bm{\lambda}\})$ with $\bm{\lambda} = [\lambda^{(1)}, \lambda^{(2)}]$ whose $\hat{\mu} = \hat{\sigma}^2 \lambda^{(1)}$ and $\hat{{\sigma}^2} = -\frac{1}{2} {\lambda^{(2)}}^{-1}$.\\
+\noindent
+First, we compute the joint Gaussian distribution $q_{c}(\bm{S})$ of the conjugate terms by expanding them and obtain its natural parameter: 
+\begin{align}
+q_{c}(\bm{S}) 
+&= p(s_{1, 1}) \prod_{t=2}^T p(s_{1, t}|s_{1, t-1})\\
+&\propto \exp \left\{ -\frac{1}{2} \left((s_{1,1} - \mu_1)^T C^{-1} (s_{1,1} - \mu_1)  + \sum_{t=2}^T  (s_{1, t} - As_{1, t-1})^T Q^{-1} (s_{1, t} - As_{1, t-1}) \right) \right\}\\
+&\propto \exp \left\{ -\frac{1}{2} \left( s_{1,1}^T C^{-1} s_{1,1} - 2 s_{1,1}^T C^{-1} \mu_1 + \mu_1^T C^{-1} \mu_1 \right. \right. \nonumber \\ 
+& \left. \left. \qquad \quad \ +\sum_{t=2}^T s_{1, t}^T Q^{-1} s_{1, t} - 2s_{1, t}^T Q^{-1} As_{1, t-1} + (A s_{1, t-1})^T Q^{-1} A s_{1, t-1} \right) \right\}\\
+&\propto \exp \left\{- \frac{1}{2} \left( \bm{S^T H S} - 2 \bm{S^T G} \right) \right\}\\
+&\propto \exp \left\{- \frac{1}{2} \left( \bm{S^T H S} - 2 \bm{S^T H H^{-1} G} + \bm{(H^{-1} G)^T H H^{-1} G}\right) \right\}\\
+&\propto \exp \left\{- \frac{1}{2} (\bm{S} - \bm{H^{-1} G})^T \bm{H} (\bm{S} - \bm{H^{-1} G}) \right\}
+\end{align}
+where $\bm{S}$ is the $T \times 1$ vector containing $s_{1, 1}$ to $s_{1,T}$, $\bm{H}$ the $T \times T$ block diagonal matrix of form
+\begin{align}
+\begin{bmatrix} 
+    C^{-1}  + A^T Q^{-1} A &  -Q^{-1}A  & 0  & \hdots & \hdots & 0 \\
+    -Q^{-1}A    & Q^{-1} + A^T Q^{-1} A & -Q^{-1}A  & \hdots & \hdots & \vdots \\
+    0    & -Q^{-1}A   & Q^{-1}  + A^T Q^{-1} A& \hdots & \hdots &\vdots \\
+    0    & 0   & 0  & \ddots & \hdots & \vdots \\
+    0    & 0   & 0  & \ddots & Q^{-1} + A^T Q^{-1} A   & -Q^{-1}A  \\
+    0    & 0   & 0  & \hdots & -Q^{-1}A     & Q^{-1}
+ \end{bmatrix}
+\end{align}
+and $\bm{G}$ is the $T \times 1$ vector $[C^{-1} \mu_1, 0, 0, \hdots 0]$. Interrogating $q_{c}(\bm{S})$, we can see that its natural parameters $\bm{\lambda} = [\bm{G}, -\frac{1}{2}\bm{H}]$ and variational parameters $\bm{\theta} = [\bm{H^{-1} G}, \bm{H^{-1}}]$. In practice, $\bm{H}$ is of size $2T \times 2T$ with each entry being a $2 \times 2$ block. To ensure efficient computation of $\bm{m}$, we flatten $\bm{G}$ to a $2T \times 1$ matrix before multiplying with $\bm{H^{-1}}$ and reshape the resulting matrix to $2 \times T$ and taking its transpose. \\
+\noindent
+Second, we apply the CVI update rule for our Gaussian approximation of the non-conjugate term: 
+\begin{align}
+\tilde{\lambda}_{k}^{(i)} = (1 - \beta_k) \tilde{\lambda}_{{k-1}}^{(i)} + \beta_k \hat{\nabla}_{\mu^{(i)}} \mathbb{E}_{q}[\log P(\bm{Y}|\bm{S})]|_{\mu = \mu_{k}^{(i)}}
+\end{align}
+with $k$ the number of gradient descent steps taken and $\mu_{k}^{(i)}$ the $i^{th}$ mean of the overall distribution $q(\bm{S})$ respectively.\\
+\noindent
+We use Monte Carlo integration to compute $\hat{\nabla}_{\mu^{(i)}} \mathbb{E}_{q}[\log P(\bm{Y}|\bm{S})]|_{\mu = \mu_{k}^{(i)}}$. Following \cite{khan2017conjugate}, we set $f_n = \mathbb{E}_{q}[\log P(y_{1, t}|s_{1, t})]|$ with $q(s_{1, t}) = \mathcal{N}(z_{1, t}|m_{1, t}, V_{(1, t), (1, t)})$ and express the mean parameters $\mu_n^{(1)} = m_n$ and $\mu_n^{(1)} = V_{nn} + m_n^2$. By applying the chain rule, we can write the gradients in terms of their variational parameters:
+\begin{align}
+&\frac{\partial f_n}{\partial \mu_n^{(1)}} = \frac{\partial f_n}{\partial m_n}\frac{\partial m_n}{\partial \mu_n^{(1)}} + \frac{\partial f_n}{\partial V_{nn}}\frac{\partial V_{nn}}{\partial \mu_n^{(1)}} =  \frac{\partial f_n}{\partial m_n} - 2 \frac{\partial f_n}{\partial V_{nn}} m\\
+&\frac{\partial f_n}{\partial \mu_n^{(2)}} = \frac{\partial f_n}{\partial m_n}\frac{\partial m_n}{\partial \mu_n^{(2)}} + \frac{\partial f_n}{\partial V_{nn}}\frac{\partial V_{nn}}{\partial \mu_n^{(2)}} =  \frac{\partial f_n}{\partial V_{nn}}
+\end{align}
+We observe from \cite{opper2009variational} that fitting a local Laplace approximation is equivalent to rewriting the gradients of the expectation as:
+\begin{align}
+\frac{\partial f_n}{\partial m_n} = \mathbb{E}_q \left[ \nabla_{s_{1, t}} f_n \right],\ \frac{\partial f_n}{\partial V_{nn}} = \frac{1}{2} \mathbb{E}_q \left[ \nabla_{s_{1, t}} \nabla_{s_{1, t}} f_n \right] \label{df_dm_dv}
+\end{align}
+\noindent
+Begin by converting the Poisson distribution to its exponential form
+\begin{align}
+\textrm{Poisson}(y_{1, t} | s_{1, t})
+&= s_{1, t}^{y_{1, t}} \frac{e^{-s_{1, t}}}{y_{1, t}!}\\
+&= \frac{1}{y_{1, t}!}\exp\left\{y_{1, t} \log s_{1, t} - s_{1, t}\right\}
+\end{align}
+Next, we proceed to compute the functions within the expectations in \ref{df_dm_dv}:
+\begin{align}
+\nabla_{s_{1, t}} \log P(y_{1, t}|s_{1, t})
+&= \nabla_{s_{1, t}} \left(-\log y_{1, t}! + y_{1, t} \log s_{1, t} - s_{1, t}\right)\\
+&= \frac{y_{1, t}}{s_{1, t}} - 1\\
+\nabla_{s_{1, t}} \nabla_{s_{1, t}} \log P(y_{1, t}|s_{1, t})] 
+&= \nabla_{s_{1, t}} \frac{y_{1, t}}{s_{1, t}} - 1\\
+&= -\frac{y_{1, t}}{s_{1, t}^2}
+\end{align}
+Lastly, we take the average of a set number as an approximate to the expectations. With the above in place, we have all the pieces we need for CVI.\\
+\noindent
+Here we include a brief note on our efforts in obtaining a closed-form solution to the gradients of the expectation and why we were unsuccessful. We began by looking at \cite{khan2012variational} after the authors of \cite{khan2017conjugate} pointed out that the expectation of a Gaussian approximation to the Poisson distribution could be expressed analytically. However in the paper, the analytical form of such an expectation was in the natural parameter space instead of the variational parameter space we desired. We tried brute force integration of the Poisson log-likelihood and its gradients but was stymied by having to compute the expectation with respect to a Gaussian of $\log s_{1, t}$, $\frac{1}{s_{1, t}}$  and $\frac{1}{s_{1, t}^2}$ respectively. We later found a Taylor series approximation for the expectation of $\log s_{1, t}$  in \cite{teh2006collapsed} which worked well for higher values of $y_{1, t}$ but performed very poorly for values close to 0, Upon further scrutiny, we realized that the approximation had a caveat: the approximation is only very accurate when $\mathbb{E}_q[s_{1, t}] >> 0$. Although \cite{teh2006collapsed} noted that the approximation works very well even when $s_{1, t}$ is small, in our case, our $s_{1, t}$ is too small for it to work. Hence we had to resort to Monte Carlo integration.
+
+\subsection{Realistic Problem Setup}
+Moving to the more realistic problem setup, we have:
+\begin{align}
+&s_{1, 1} \sim \mathcal{N}(\mu_1, C) \\
+&s_{1, t} | s_{1, t-1} \sim \mathcal{N} (As_{1, t-1}, Q)\ \forall\ t \geq 1\\
+&P(y_{1, t}|\bm{s_{1 ,t}}) = P(y_{1, t}|I_t) =\prod_{x=1}^L\prod_{y=1}^L e^{-[BI_t]_{xy}}\dfrac{[BI_t]_{xy}^{Y_{t,xy}}}{Y_{t,xy}!}
+\end{align}
+where $B$ is a point spread function and $I_t$ the high resolution image at time t.
+
+\subsection{CVI for Single Particle Tracking}
+As the above setup is identical to the simplified problem setup apart from the Poisson likelihood function, we only have to compute the derivative of the new likelihood function with respect to $s_{1, t}$. Following the previous section, we first write the likelihood in its exponential form:
+\begin{align}
+P(y_{1, t}|\bm{s_{1 ,t}})
+&= \prod_{x=1}^L\prod_{y=1}^L \frac{1}{Y_{t,xy}!} \exp\left\{Y_{t,xy} \log[B \ast I_t]_{xy} -[B \ast I_t]_{xy} \right\}
+\end{align}
+In this case, since the particle in $s_{1, t}$ only exist at a fixed coordinate within the image $I_t$ we only obtain a non-zero derivative at that position via the chain rule as shown below:
+\begin{align}
+\nabla_{s_{1, t}} \log P(y_{1, t}|s_{1, t})
+&= \frac{\partial}{\partial I_t} \frac{\partial}{\partial s_{1, t}} \sum_{x=1}^L\sum_{y=1}^L -\log Y_{t,xy}! + Y_{t,xy} \log[B \ast I_t]_{xy} -[B \ast I_t]_{xy}\\
+&= \frac{\partial}{\partial s_{1, t}} \sum_{x=1}^L\sum_{y=1}^L \frac{Y_{t,xy}}{[B \ast I_t]_{xy}} - B_{xy}\\
+&= \sum_{x=1}^L\sum_{y=1}^L  B_{s_{1, t}} \frac{Y_{t, {s_{1, t}}}}{[B \ast I_t]_{s_{1, t}}} - B_{s_{1, t}}\\
+\nabla_{s_{1, t}} \nabla_{s_{1, t}}  \log P(y_{1, t}|s_{1, t})
+&=  \sum_{x=1}^L\sum_{y=1}^L - B_{s_{1, t}}^2 \frac{Y_{t, {s_{1, t}}}}{([B \ast I_t]_{s_{1, t}})^2}
+\end{align}
+
+\begin{algorithm}[H]
+\caption{CVI for Kalman Filter with non-conjugate likelihood}
+\begin{algorithmic}[1]
+\State Initialize $\tilde{\bm{\lambda}}_{0} = 0$ and $\bm{\lambda}_{1} = \theta = [\bm{G}, \bm{-\frac{1}{2}H}]$
+\For {k = 1, 2, 3, ... till convergence}
+\State $\bm{\Sigma_k} = -\frac{1}{2} \left( \lambda_k^{(2)} \right)^{-1} $
+\State $\bm{\mu_k}  = \bm{\Sigma_t \lambda_k^{(1)}}$
+\State $\tilde{\lambda}_{k} = (1 - \beta_k) \tilde{\lambda}_{k-1} + \beta_k \hat{\nabla}_{\mu} \mathbb{E}_{q}[\log P(\bm{Y}|\bm{S})]|_{\mu = \mu_{k}}$
+\State $\bm{\lambda}_{k+1} = \tilde{\bm{\lambda}}_{k} + \bm{\theta}$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+Using $\lambda_K$, we can calculate the mean and the variance of our approximating Gaussian $\hat{\mu} = \hat{\sigma}^2 \lambda_K^{(1)}$ and $\hat{{\sigma}^2} = -\frac{1}{2 \lambda_K^{(2)}}$.
+
+\section{Multiple Particle CVI}
+We use the exact same setup in the multiple particle case where each particle is modelled using its own individual state-space model.  Following the previous setup, we model each particle as a vector of length $T$ with each entry containing the $x$ and $y$ coordinates of the particle. The vectors are then stacked as a $J \times T \times 1$ tensor where $J$ is the number of particles in each frame. To make the problem easier, we make the assumption that the number of particles per frame stays fixed.
+
+\section{To Do}
+\begin{enumerate}
+	\item Get model working for single particle images
+	\item Visualise and understand multiple particle data
+	\item Figure out model for multiple particle data
+\end{enumerate}
+
+\section{Done}
+\begin{itemize}
+	\item Understand how gradient descent is optimising a quadratic approximation to $\mathcal{L}$ \footnote{\url{https://homes.cs.washington.edu/~marcotcr/blog/gradient-descent/}} \footnote{\url{https://www.cs.cmu.edu/~ggordon/10725-F12/slides/05-gd-revisited.pdf}}
+	\item Revise exponential families (FoGM), HMMs (SML, MLEE)
+	\item Read state-space paper, Kalman Filters (PML)
+	\item Visualise and understand single particle data
+	\item Learn to use TrackMate and compute results for tracking performance for single particles
+	\item Understand Khan and Lin 2017
+	\item Understand how Kalman filters with non-Gaussian likelihoods can be approximated with a multivariate Gaussian (MLPP 654) and how it can be expressed in exponential form
+	\item Write algorithm for single particle CVI
+	\item Revise GLM for poisson likelihoods
+	\item Understand the use of MC integration in Khan and Lin 
+	\item Fix $\eta$ computation
+%	\item Search for other Python-based SPT methods
+	\item Generate data with poisson likelihood
+	\item Check that derivatives obtained from GPML are right
+	\item Revise VI, stochastic approximation (BMML 86)
+\end{itemize}
+
+\section{Ideas}
+
+\clearpage
+\printbibliography
+\clearpage
+
+\end{document}

@@ -1,0 +1,15 @@
+[0] Config.pm:343> INFO - This is Biber 2.5
+[0] Config.pm:346> INFO - Logfile is 'typeinst.blg'
+[94] biber-darwin:290> INFO - === Mon May 15, 2017, 01:48:23
+[140] Biber.pm:351> INFO - Reading 'typeinst.bcf'
+[322] Biber.pm:776> INFO - Found 4 citekeys in bib section 0
+[343] Biber.pm:3493> INFO - Processing section 0
+[364] Biber.pm:3657> INFO - Looking for bibtex format file 'references.bib' for section 0
+[367] bibtex.pm:1187> INFO - Decoding LaTeX character macros into UTF-8
+[370] bibtex.pm:1048> INFO - Found BibTeX data source 'references.bib'
+[416] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[416] UCollate.pm:66> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[416] Biber.pm:3306> INFO - Sorting list 'ynt/global/' of type 'entry' with scheme 'ynt' and locale 'en-US'
+[416] Biber.pm:3310> INFO - No sort tailoring available for locale 'en-US'
+[422] bbl.pm:526> INFO - Writing 'typeinst.bbl' with encoding 'UTF-8'
+[423] bbl.pm:619> INFO - Output to typeinst.bbl

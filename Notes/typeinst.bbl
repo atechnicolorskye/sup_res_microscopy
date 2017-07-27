@@ -1,0 +1,133 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 2.7 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \sortlist[entry]{ynt/global/}
+    \entry{teh2006collapsed}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{hash=577af3eb832d26c33caa634a276d4d7e}{%
+           family={Teh},
+           family_i={T\bibinitperiod},
+           given={Yee\bibnamedelima Whye},
+           given_i={Y\bibinitperiod\bibinitdelim W\bibinitperiod}}}%
+        {{hash=c6e083f47bda3beece2d206379d5135b}{%
+           family={Newman},
+           family_i={N\bibinitperiod},
+           given={David},
+           given_i={D\bibinitperiod}}}%
+        {{hash=53d2880ad8047b61cdae2c6b2803e763}{%
+           family={Welling},
+           family_i={W\bibinitperiod},
+           given={Max},
+           given_i={M\bibinitperiod}}}%
+      }
+      \strng{namehash}{e5eea4e799aab6b8192cd35803ad84ac}
+      \strng{fullhash}{e5eea4e799aab6b8192cd35803ad84ac}
+      \field{labelalpha}{TNW06}
+      \field{sortinit}{2}
+      \field{sortinithash}{8343b463aacf48517c044b4d2c9c45ed}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{NIPS}
+      \field{title}{A Collapsed Variational Bayesian Inference Algorithm for Latent Dirichlet Allocation}
+      \field{volume}{6}
+      \field{year}{2006}
+      \field{pages}{1378\bibrangedash 1385}
+      \range{pages}{8}
+    \endentry
+    \entry{opper2009variational}{article}{}
+      \name{author}{2}{}{%
+        {{hash=220178a163f8a2654116239dcb608649}{%
+           family={Opper},
+           family_i={O\bibinitperiod},
+           given={Manfred},
+           given_i={M\bibinitperiod}}}%
+        {{hash=76aff46daf4534ca36a2dbd0564e0cf5}{%
+           family={Archambeau},
+           family_i={A\bibinitperiod},
+           given={Cédric},
+           given_i={C\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {MIT Press}%
+      }
+      \strng{namehash}{06d653e6f465637a00ac3a0ebbe3f100}
+      \strng{fullhash}{06d653e6f465637a00ac3a0ebbe3f100}
+      \field{labelalpha}{OA09}
+      \field{sortinit}{2}
+      \field{sortinithash}{8343b463aacf48517c044b4d2c9c45ed}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Neural computation}
+      \field{number}{3}
+      \field{title}{The Variational Gaussian Approximation Revisited}
+      \field{volume}{21}
+      \field{year}{2009}
+      \field{pages}{786\bibrangedash 792}
+      \range{pages}{7}
+    \endentry
+    \entry{khan2012variational}{article}{}
+      \name{author}{1}{}{%
+        {{hash=339a9918e0b5dc110a8e0761db9f05ec}{%
+           family={Khan},
+           family_i={K\bibinitperiod},
+           given={Mohammad},
+           given_i={M\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {University of British Columbia}%
+      }
+      \strng{namehash}{339a9918e0b5dc110a8e0761db9f05ec}
+      \strng{fullhash}{339a9918e0b5dc110a8e0761db9f05ec}
+      \field{labelalpha}{Kha12}
+      \field{sortinit}{2}
+      \field{sortinithash}{8343b463aacf48517c044b4d2c9c45ed}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Variational learning for latent Gaussian model of discrete data}
+      \field{year}{2012}
+    \endentry
+    \entry{khan2017conjugate}{article}{}
+      \name{author}{2}{}{%
+        {{hash=d874914c4ac2470c469cbc58e30961ee}{%
+           family={Khan},
+           family_i={K\bibinitperiod},
+           given={Mohammad\bibnamedelima Emtiyaz},
+           given_i={M\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
+        {{hash=43250431361011db79ecdf27867678cc}{%
+           family={Lin},
+           family_i={L\bibinitperiod},
+           given={Wu},
+           given_i={W\bibinitperiod}}}%
+      }
+      \strng{namehash}{ea65f698125cf4625dbefa29c20c4ea9}
+      \strng{fullhash}{ea65f698125cf4625dbefa29c20c4ea9}
+      \field{labelalpha}{KL17}
+      \field{sortinit}{2}
+      \field{sortinithash}{8343b463aacf48517c044b4d2c9c45ed}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:1703.04265}
+      \field{title}{Conjugate-Computation Variational Inference: Converting Variational Inference in Non-Conjugate Models to Inferences in Conjugate Models}
+      \field{year}{2017}
+    \endentry
+  \endsortlist
+\endrefsection
+\endinput
+
